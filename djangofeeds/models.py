@@ -8,10 +8,14 @@ from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 from django.utils.hashcompat import md5_constructor
 
+from taggit_autocomplete_modified.managers import \
+    TaggableManagerAutocomplete as TaggableManager
+
+
 from djangofeeds import conf
 from djangofeeds.utils import naturaldate
 from djangofeeds.managers import FeedManager, PostManager
-from djangofeeds.managers import EnclosureManager, CategoryManager
+from djangofeeds.managers import EnclosureManager
 from djangofeeds.backends import backend_or_default
 
 ACCEPTED_STATUSES = frozenset([http.OK,
@@ -47,35 +51,6 @@ def timedelta_seconds(delta):
 
     """
     return max(delta.total_seconds(), 0)
-
-
-class Category(models.Model):
-    """Category associated with :class:`Post`` or :class:`Feed`.
-
-    .. attribute:: name
-
-        Name of the category.
-
-    .. attribute:: domain
-
-        The type of category
-
-    """
-    name = models.CharField(_(u"name"), max_length=128)
-    domain = models.CharField(_(u"domain"),
-                              max_length=128, null=True, blank=True)
-
-    objects = CategoryManager()
-
-    class Meta:
-        unique_together = ("name", "domain")
-        verbose_name = _(u"category")
-        verbose_name_plural = _(u"categories")
-
-    def __unicode__(self):
-        if self.domain:
-            return u"%s [%s]" % (self.name, self.domain)
-        return u"%s" % self.name
 
 
 class Feed(models.Model):
@@ -126,7 +101,6 @@ class Feed(models.Model):
                                               editable=False, blank=True)
     date_last_refresh = models.DateTimeField(_(u"date of last refresh"),
                                         null=True, blank=True, editable=False)
-    categories = models.ManyToManyField(Category)
     last_error = models.CharField(_(u"last error"), blank=True, default="",
                                  max_length=32, choices=FEED_ERROR_CHOICES)
     ratio = models.FloatField(default=0.0)
@@ -139,6 +113,7 @@ class Feed(models.Model):
                                                auto_now_add=True)
     is_active = models.BooleanField(_(u"is active"), default=True)
     freq = models.IntegerField(_(u"frequency"), default=conf.REFRESH_EVERY)
+    tags = TaggableManager(blank=True, help_text=_("These tags will apply to all posts syndicated from this feed."))
 
     objects = FeedManager()
 
@@ -323,7 +298,7 @@ class Post(models.Model):
     date_published = models.DateField(_(u"date published"))
     date_updated = models.DateTimeField(_(u"date updated"))
     enclosures = models.ManyToManyField(Enclosure, blank=True)
-    categories = models.ManyToManyField(Category)
+    sticky = models.BooleanField(blank=True)
 
     objects = PostManager()
 

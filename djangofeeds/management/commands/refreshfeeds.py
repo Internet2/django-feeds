@@ -14,10 +14,8 @@ def print_feed_summary(feed_obj):
     """Dump a summary of the feed (how many posts etc.)."""
     posts = feed_obj.get_posts()
     enclosures_count = sum([post.enclosures.count() for post in posts])
-    categories_count = sum([post.categories.count() for post in posts]) \
-                        + feed_obj.categories.count()
-    sys.stderr.write("*** Total %d posts, %d categories, %d enclosures\n" % \
-            (len(posts), categories_count, enclosures_count))
+    sys.stderr.write("*** Total %d posts, %d enclosures\n" % \
+            (len(posts), enclosures_count))
 
 
 def refresh_all(verbose=True):

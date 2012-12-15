@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from djangofeeds.models import Feed, Post, Enclosure, Category
+from djangofeeds.models import Feed, Post, Enclosure
 
 
 class FeedAdmin(admin.ModelAdmin):
@@ -16,7 +16,6 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ['link', 'title']
     date_hierarchy = 'date_updated'
 
-admin.site.register(Category)
 admin.site.register(Enclosure)
 admin.site.register(Feed, FeedAdmin)
 admin.site.register(Post, PostAdmin)

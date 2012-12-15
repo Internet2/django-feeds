@@ -61,7 +61,6 @@ class FeedImporter(object):
     update_on_import = True
     post_model = models.Post
     feed_model = models.Feed
-    category_model = models.Category
     enclosure_model = models.Enclosure
     post_field_handlers = {
         "content": feedutil.find_post_content,
@@ -190,22 +189,6 @@ class FeedImporter(object):
             feed_obj = self.update_feed(feed_obj, feed=feed, force=force)
 
         return feed_obj
-
-    def get_categories(self, obj):
-        """Get and save categories."""
-        return [self.create_category(*cat)
-                    for cat in getattr(obj, "categories", [])]
-
-    def create_category(self, domain, name):
-        """Create new category.
-
-        :param domain: The category domain.
-        :param name: The name of the category.
-
-        """
-        return self.category_model.objects.update_or_create(
-                      name=name.strip(),
-                      domain=domain and domain.strip() or "")
 
     def update_feed(self, feed_obj, feed=None, force=False):
         """Update (refresh) feed.
