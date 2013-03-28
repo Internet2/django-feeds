@@ -8,6 +8,7 @@ from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 from django.utils.hashcompat import md5_constructor
 
+from cms.models.pluginmodel import CMSPlugin
 from taggit_autocomplete_modified.managers import \
     TaggableManagerAutocomplete as TaggableManager
 
@@ -327,3 +328,14 @@ class Post(models.Model):
     @property
     def date_updated_naturaldate(self):
         return unicode(naturaldate(self.date_updated))
+
+class FeedsPluginModel(CMSPlugin):
+    tags = models.CharField(max_length=240, blank=True, help_text="Comma separated")
+    feeds = models.CharField(max_length=240, blank=True, help_text="Comma separated")
+    limit = models.IntegerField(default=10)
+    more = models.BooleanField(blank=True, default=True, help_text="Show more button?")
+    
+    def __unicode__(self):
+        return u'%s' % (self.tags)
+    
+    
