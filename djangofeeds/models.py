@@ -9,9 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.hashcompat import md5_constructor
 
 from cms.models.pluginmodel import CMSPlugin
-from taggit_autocomplete_modified.managers import \
-    TaggableManagerAutocomplete as TaggableManager
 
+from taggit.models import Tag
 
 from djangofeeds import conf
 from djangofeeds.utils import naturaldate
@@ -114,7 +113,7 @@ class Feed(models.Model):
                                                auto_now_add=True)
     is_active = models.BooleanField(_(u"is active"), default=True)
     freq = models.IntegerField(_(u"frequency"), default=conf.REFRESH_EVERY)
-    tags = TaggableManager(blank=True, help_text=_("These tags will apply to all posts syndicated from this feed."))
+    tags = models.ManyToManyField(Tag, blank=True)
 
     objects = FeedManager()
 
