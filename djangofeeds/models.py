@@ -6,7 +6,7 @@ from django.utils.timezone import utc
 from django.db import models
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
-from django.utils.hashcompat import md5_constructor
+import hashlib # md5_constructor
 
 from cms.models.pluginmodel import CMSPlugin
 
@@ -312,7 +312,7 @@ class Post(models.Model):
 
     def auto_guid(self):
         """Automatically generate a new guid from the metadata available."""
-        return md5_constructor("|".join((
+        return hashlib.md5("|".join((
                     self.title, self.link, self.author))).hexdigest()
 
     def __unicode__(self):
